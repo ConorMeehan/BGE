@@ -19,6 +19,7 @@
 #include "Lab7.h"
 #include "Lab8.h"
 #include "Buddha.h"
+#include "GPUParticleTest.h"
 
 using namespace BGE;
 
@@ -29,7 +30,8 @@ int main(int argc, char *argv[])
 
 	// Uncomment this line to run the Rift/Connect/Physics demo as per 
 	// http://www.youtube.com/watch?v=EEbVHxOkTxw
-	SceneGraphGame  game;
+	//SceneGraphGame  game;
+	GPUParticleTest game;
 	game.Run();
 
 	return 0;

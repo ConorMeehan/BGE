@@ -10,8 +10,6 @@ namespace BGE
 	class PhysicsCamera :
 		public PhysicsController, public btMotionState 
 	{
-	private:
-		PhysicsController * pickedUp;
 	public:
 		PhysicsCamera(PhysicsFactory * physicsFactory);
 		~PhysicsCamera(void);
@@ -24,5 +22,6 @@ namespace BGE
 		PhysicsFactory * physicsFactory;
 		float elapsed;
 		float fireRate;
+		PhysicsController * pickedUp;
 	};
 }

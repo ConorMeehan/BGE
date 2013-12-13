@@ -85,6 +85,8 @@
     <ClCompile Include="Buddha.cpp" />
     <ClCompile Include="FlockingScenario.cpp" />
     <ClCompile Include="FountainEffect.cpp" />
+    <ClCompile Include="GPUParticleEffect.cpp" />
+    <ClCompile Include="GPUParticleTest.cpp" />
     <ClCompile Include="IdleState.cpp" />
     <ClCompile Include="Lab4.cpp" />
     <ClCompile Include="Lab5.cpp" />
@@ -144,6 +146,8 @@
     <ClInclude Include="Buddha.h" />
     <ClInclude Include="FlockingScenario.h" />
     <ClInclude Include="FountainEffect.h" />
+    <ClInclude Include="GPUParticleEffect.h" />
+    <ClInclude Include="GPUParticleTest.h" />
     <ClInclude Include="IdleState.h" />
     <ClInclude Include="Lab4.h" />
     <ClInclude Include="Lab5.h" />
@@ -209,6 +213,8 @@
     <None Include="Content\flocking.properties" />
     <None Include="Content\Lines.fragmentshader" />
     <None Include="Content\Lines.vertexshader" />
+    <None Include="Content\particle.computeshader" />
+    <None Include="Content\particleEmitter.computeshader" />
     <None Include="Content\Particles.fragmentshader" />
     <None Include="Content\Particles.vertexshader" />
     <None Include="Content\SimpleShader.fragmentshader" />

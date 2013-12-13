@@ -8,7 +8,8 @@ using namespace BGE;
 string Content::prefix = "Content/";
 map<string, shared_ptr<Model>> Content::models = map<string, shared_ptr<Model>>();
 map<string, GLuint> Content::textures = map<string, GLuint>();
-map<string, GLuint> Content::shaders = map<string, GLuint>();	
+map<string, GLuint> Content::shaders = map<string, GLuint>();
+map<string, GLuint> Content::computeShaders = map<string, GLuint>();
 map<string, FMOD::Sound*> Content::sounds = map<string, FMOD::Sound*>();	
 
 FMOD::Sound * Content::LoadSound(string name, bool looped)
@@ -21,11 +22,7 @@ FMOD::Sound * Content::LoadSound(string name, bool looped)
 	}
 	FMOD::Sound * sound;
 
-	string fileName = Content::prefix + name;
-	if (name.find(".") == string::npos)
-	{
-		 fileName += ".wav";
-	}
+	string fileName = Content::prefix + name + ".mp3";
 	FMOD_RESULT res = Game::Instance()->soundSystem->fmodSystem->createSound(fileName.c_str(), (looped) ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF , 0, & sound);
 	if (res != FMOD_OK)
 	{
@@ -344,11 +341,11 @@ GLuint Content::LoadShaderPair(string name) {
 	}
 	string vertexFilePath = Content::prefix + name + ".vertexshader";
 	string fragmentFilePath = Content::prefix + name + ".fragmentshader";
-	
+
 	// Create the shaders
 	GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
 	GLuint FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
- 
+
 	// Read the Vertex Shader code from the file
 	std::string VertexShaderCode;
 	std::ifstream VertexShaderStream(vertexFilePath, std::ios::in);
@@ -363,7 +360,7 @@ GLuint Content::LoadShaderPair(string name) {
 	{
 		throw BGE::Exception("Could not load vertex sharer");
 	}
- 
+
 	// Read the Fragment Shader code from the file
 	std::string FragmentShaderCode;
 	std::ifstream FragmentShaderStream(fragmentFilePath, std::ios::in);
@@ -380,50 +377,114 @@ GLuint Content::LoadShaderPair(string name) {
 
 	GLint Result = GL_FALSE;
 	int InfoLogLength;
- 
+
 	// Compile Vertex Shader
 	cout << "Compiling shader: " << vertexFilePath << endl;
 	char const * VertexSourcePointer = VertexShaderCode.c_str();
 	glShaderSource(VertexShaderID, 1, &VertexSourcePointer , NULL);
 	glCompileShader(VertexShaderID);
- 
+
 	// Check Vertex Shader
 	glGetShaderiv(VertexShaderID, GL_COMPILE_STATUS, &Result);
 	glGetShaderiv(VertexShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
 	std::vector<char> VertexShaderErrorMessage(10000);
 	glGetShaderInfoLog(VertexShaderID, InfoLogLength, NULL, &VertexShaderErrorMessage[0]);
 	fprintf(stdout, "%s\n", &VertexShaderErrorMessage[0]);
- 
+
 	// Compile Fragment Shader
 	cout << "Compiling shader: " << fragmentFilePath << endl;
 	char const * FragmentSourcePointer = FragmentShaderCode.c_str();
 	glShaderSource(FragmentShaderID, 1, &FragmentSourcePointer , NULL);
 	glCompileShader(FragmentShaderID);
- 
+
 	// Check Fragment Shader
 	glGetShaderiv(FragmentShaderID, GL_COMPILE_STATUS, &Result);
 	glGetShaderiv(FragmentShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
 	std::vector<char> FragmentShaderErrorMessage(10000);
 	glGetShaderInfoLog(FragmentShaderID, InfoLogLength, NULL, &FragmentShaderErrorMessage[0]);
 	fprintf(stdout, "%s\n", &FragmentShaderErrorMessage[0]);
- 
+
 	// Link the program
 	fprintf(stdout, "Linking program\n");
 	GLuint ProgramID = glCreateProgram();
 	glAttachShader(ProgramID, VertexShaderID);
 	glAttachShader(ProgramID, FragmentShaderID);
 	glLinkProgram(ProgramID);
- 
+
 	// Check the program
 	glGetProgramiv(ProgramID, GL_LINK_STATUS, &Result);
 	glGetProgramiv(ProgramID, GL_INFO_LOG_LENGTH, &InfoLogLength);
 	std::vector<char> ProgramErrorMessage( std::max(InfoLogLength, int(1)) );
 	glGetProgramInfoLog(ProgramID, InfoLogLength, NULL, &ProgramErrorMessage[0]);
 	fprintf(stdout, "%s\n", &ProgramErrorMessage[0]);
- 
+
 	glDeleteShader(VertexShaderID);
 	glDeleteShader(FragmentShaderID);
- 
+
 	shaders[name] = ProgramID;
 	return ProgramID;
 }
+
+GLuint Content::LoadComputeShader(string name) {
+
+	// First check to see if it's already loaded and if so, just return it
+	map<string, GLuint>::iterator it = Content::computeShaders.find(name);
+	if (it != Content::computeShaders.end())
+	{
+		return it->second;
+	}
+	string computeFilePath = Content::prefix + name + ".computeshader";
+
+	// Create the shaders
+	GLuint ComputeShaderID = glCreateShader(GL_COMPUTE_SHADER);
+
+	// Read the Vertex Shader code from the file
+	std::string ComputeShaderCode;
+	std::ifstream ComputeShaderStream(computeFilePath, std::ios::in);
+	if(ComputeShaderStream.is_open())
+	{
+		std::string Line = "";
+		while(getline(ComputeShaderStream, Line))
+			ComputeShaderCode += "\n" + Line;
+		ComputeShaderStream.close();
+	}
+	else
+	{
+		throw BGE::Exception("Could not load compute sharer");
+	}
+
+	GLint Result = GL_FALSE;
+	int InfoLogLength;
+
+	// Compile Vertex Shader
+	cout << "Compiling shader: " << computeFilePath << endl;
+	char const * ComputeSourcePointer = ComputeShaderCode.c_str();
+	glShaderSource(ComputeShaderID, 1, &ComputeSourcePointer , NULL);
+	glCompileShader(ComputeShaderID);
+
+	// Check Vertex Shader
+	glGetShaderiv(ComputeShaderID, GL_COMPILE_STATUS, &Result);
+	glGetShaderiv(ComputeShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
+	std::vector<char> ComputeShaderErrorMessage(10000);
+	glGetShaderInfoLog(ComputeShaderID, InfoLogLength, NULL, &ComputeShaderErrorMessage[0]);
+	fprintf(stdout, "%s\n", &ComputeShaderErrorMessage[0]);
+
+	// Link the program
+	fprintf(stdout, "Linking program\n");
+	GLuint ProgramID = glCreateProgram();
+	glAttachShader(ProgramID, ComputeShaderID);
+	glLinkProgram(ProgramID);
+
+	// Check the program
+	glGetProgramiv(ProgramID, GL_LINK_STATUS, &Result);
+	glGetProgramiv(ProgramID, GL_INFO_LOG_LENGTH, &InfoLogLength);
+	std::vector<char> ProgramErrorMessage( std::max(InfoLogLength, int(1)) );
+	glGetProgramInfoLog(ProgramID, InfoLogLength, NULL, &ProgramErrorMessage[0]);
+	fprintf(stdout, "%s\n", &ProgramErrorMessage[0]);
+
+	glDeleteShader(ComputeShaderID);
+
+	computeShaders[name] = ProgramID;
+	return ProgramID;
+}
+

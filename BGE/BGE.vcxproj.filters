@@ -212,6 +212,12 @@
     <ClCompile Include="PhysicsDrawer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GPUParticleEffect.cpp">
+      <Filter>Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="GPUParticleTest.cpp">
+      <Filter>Games</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -386,6 +392,12 @@
       <Filter>Games</Filter>
     </ClInclude>
     <ClInclude Include="PhysicsDrawer.h" />
+    <ClInclude Include="GPUParticleEffect.h">
+      <Filter>Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="GPUParticleTest.h">
+      <Filter>Games</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Content\CubeShader.fragmentshader">
@@ -462,5 +474,11 @@
       <Filter>Content</Filter>
     </None>
     <None Include="Particles.cd" />
+    <None Include="Content\particleEmitter.computeshader">
+      <Filter>Content</Filter>
+    </None>
+    <None Include="Content\particle.computeshader">
+      <Filter>Content</Filter>
+    </None>
   </ItemGroup>
 </Project>
